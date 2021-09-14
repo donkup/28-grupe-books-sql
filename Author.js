@@ -12,11 +12,7 @@ Author.create = async (connection, authorFirstname, authorLastname) => {
                     (`id`, `firstname`, `lastname`) \
                 VALUES (NULL, " '+ authorFirstname + ' ", "' + authorLastname + '")';
     const [rows] = await connection.execute(sql);
-    const respond = `${authorFirstname} ${authorLastname} buvo sekmingai irasytas!`;
-
-    // console.log(respond);
-    return respond;
-
+    return `${authorFirstname} ${authorLastname} buvo sekmingai irasytas!`;
 }
 
 Author.listAll = async (connection) => {
