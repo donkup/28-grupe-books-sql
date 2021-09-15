@@ -21,6 +21,16 @@ app.init = async () => {
     console.log(mike);
     console.log(paula);
 
+    const authors = await Author.listAll(conn);
+    console.log(authors);
+
+
+    const uniqAuthor = await Author.findById(conn, 1);
+    console.log(uniqAuthor);
+
+    const uniqAuthor2 = await Author.findById(conn, 99);
+    console.log(uniqAuthor2);
+
 
 }
 
