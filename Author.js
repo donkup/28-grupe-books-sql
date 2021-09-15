@@ -14,6 +14,11 @@ Author.create = async (connection, authorFirstname, authorLastname) => {
     const [rows] = await connection.execute(sql);
     return `${authorFirstname} ${authorLastname} buvo sekmingai irasytas!`;
 }
+/**
+ * Visu autoriu isspauzdinimas is duomenu bazes
+ * @param {object} connection 
+ * @returns Grazina visus autorius esancius duomenu bazeje
+ */
 
 Author.listAll = async (connection) => {
     const sql = 'SELECT *\
@@ -31,6 +36,12 @@ Author.listAll = async (connection) => {
 
     return title + infoList.join('\n');
 }
+/**
+ * Autoriaus paieska duomenu bazeje pagal ID
+ * @param {object} connection 
+ * @param {number} authorId 
+ * @returns Autoriu pagal duota ID
+ */
 
 Author.findById = async (connection, authorId) => {
     const sql = 'SELECT * FROM `authors` WHERE `id` =' + authorId;
