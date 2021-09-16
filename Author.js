@@ -1,75 +1,124 @@
 const Author = {};
 
 /**
- * Autoriaus irasymas i duomenu baze.
- * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
- * @param {string} authorFirstname Autoriaus vardas.
- * @param {string} authorLastname Autoriaus pavarde.
- * @returns {Promise<string>} Tekstas, apibudinantis, koks autorius buvo irasytas i duomenu baze.
+ * Autoriaus itrukimas i duombaze.
+ * @param {Object} connection   Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {string} authorFirstname  autoriaus vardas.
+ * @param {string} authorLastname  autoriaus pavarde.
+ * @param {number} authorId Autoriaus ID.
+ * @returns {Promise<string>} Tekstas nurodo autoriaus duomenis.
  */
 Author.create = async (connection, authorFirstname, authorLastname) => {
-    const sql = 'INSERT INTO `authors` \
-                    (`id`, `firstname`, `lastname`) \
-                VALUES (NULL, " '+ authorFirstname + ' ", "' + authorLastname + '")';
+    //console.log(authorFirstname, authorLastname);
+    const sql = 'INSERT INTO `authors`\
+                (`id`, `firstname`, `lastname`)\
+                VALUES (NULL, "' + authorFirstname + '", "' + authorLastname + '")';
     const [rows] = await connection.execute(sql);
-    return `${authorFirstname} ${authorLastname} buvo sekmingai irasytas!`;
+    return `${authorFirstname} ${authorLastname} buvo sekmingai itrauktas i sarasa!`;
 }
-/**
- * Visu autoriu isspauzdinimas is duomenu bazes
- * @param {object} connection 
- * @returns Grazina visus autorius esancius duomenu bazeje
- */
 
+/**
+ * Visu autoriu sarasas.
+ * @param {object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @returns {Promise<Object[]>} Tekstas nurodantis autoriu sarasa.
+ */
+const infoList = [];
 Author.listAll = async (connection) => {
-    const sql = 'SELECT *\
-            FROM `authors`';
-
+    const sql = 'SELECT * FROM `authors`';
     const [rows] = await connection.execute(sql);
-
-    let count = 0;
-    const infoList = [];
+    let i = 0;
     for (let { firstname, lastname } of rows) {
-        infoList.push(`${++count}. ${firstname} ${lastname}.`)
-    };
+        infoList.push(`${++i}. ${firstname} ${lastname}`);
 
-    const title = 'Autoriu sarasas:\n';
-
-    return title + infoList.join('\n');
+    }
+    const firstLine = 'Autoriu sarasas: \n';
+    return firstLine + infoList.join('\n');
+    //console.log(title + infoList.join('\n'));
 }
+
 /**
- * Autoriaus paieska duomenu bazeje pagal ID
- * @param {object} connection 
- * @param {number} authorId 
- * @returns Autoriu pagal duota ID
+ * Autoriaus itrukimas i duombaze.
+ * @param {Object} connection   Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {number} authorId Autoriaus ID.
+ * @returns {Promise<string>} Tekstas nurodo autoriaus duomenis.
  */
-
 Author.findById = async (connection, authorId) => {
-    const sql = 'SELECT * FROM `authors` WHERE `id` =' + authorId;
-
+    const sql = 'SELECT * FROM `authors` WHERE `id` = ' + authorId;
     const [rows] = await connection.execute(sql);
 
     if (rows.length === 0) {
-        return `Tokio autoriaus nera!`;
+        return 'Tokio autoriaus nera!';
     } else {
         const name = rows[0].firstname;
         const surname = rows[0].lastname;
-        const response = `${name} ${surname}.`
-        const title = 'Pasirinktas autorius:\n';
-
-        return title + response;
+        const author = `${name} ${surname}`;
+        return `Pasirinktas autorius pagal ID yra ${author}`;;
     }
 }
-
+/**
+ * Autoriaus paieska pagal varda.
+ * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {string} authorFirstname Autoriaus vardas.
+ * @returns {Promise<string>} Tekstas nurodo autoriaus duomenis.
+ */
 Author.findByFirstname = async (connection, authorFirstname) => {
-}
+    const sql = 'SELECT * FROM `authors` WHERE `firstname` LIKE "%' + authorFirstname + '%"';
+    const [rows] = await connection.execute(sql);
 
+    if (rows.length === 0) {
+        return 'Tokio autoriaus nera!';
+    } else {
+        const name = rows[0].firstname;
+        const surname = rows[0].lastname;
+        const author = `${name} ${surname}`;
+        return `Pasirinktas autorius pagal Varda yra ${author}`;
+    }
+}
+/**
+ * Autoriaus paieska pagal pavarde.
+ * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {string} authorLastname Autoriaus pavarde.
+ * @returns {Promise<string>} Tekstas nurodo autoriaus duomenis.
+ */
 Author.findByLastname = async (connection, authorLastname) => {
-}
+    const sql = 'SELECT * FROM `authors` WHERE `lastname` LIKE "%' + authorLastname + '%"';
+    const [rows] = await connection.execute(sql);
 
+    if (rows.length === 0) {
+        return 'Tokio autoriaus nera!';
+    } else {
+        const name = rows[0].firstname;
+        const surname = rows[0].lastname;
+        const author = `${name} ${surname}`;
+        return `Pasirinktas autorius pagal Pavarde yra ${author}`;
+    }
+}
+/**
+ * Autoriaus paieska pagal id ir viena papildoma parametra. 
+ * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {number} authorId Autoriaus ID.
+ * @param {string} propertyName Atnaujinamos savybes pavadinimas.
+ * @param {string} propertyValue Atnaujinamos savybes verte.
+ * @returns { Promise < string >} Tekstas, skelbiantis kokia savybe, pagal duota ID, buvo atnaujinta i kokia verte.
+ */
 Author.updatePropertyById = async (connection, authorId, propertyName, propertyValue) => {
+    sql = 'UPDATE authors SET ' + propertyName + ' = "' + propertyValue + '" WHERE authors.id =' + authorId;
+    [rows] = await connection.execute(sql);
+    const updated = `Author, whose ID is ${authorId},  ${propertyName} was changed to ${propertyValue}.`
+    return updated;
 }
 
+/**
+ * Autoriaus paieska pagal pavarde.
+ * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {number} authorId Autoriaus ID.
+ * @returns {Promise<string>} Tekstas nurodo autoriaus duomenis.
+ */
 Author.delete = async (connection, authorId) => {
+    const sql = 'DELETE FROM `authors` WHERE `id` = ' + authorId;
+    const [rows] = await connection.execute(sql);
+    const deletedAuthor = `Author with ID "${authorId}" has been removed from the list.`;
+    return deletedAuthor;
 }
 
 module.exports = Author;
